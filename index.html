@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ByteDepth &mdash; A Tech Blog</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="nav__logo">
+        <span class="nav__logo-bracket">&lt;</span>ByteDepth<span class="nav__logo-bracket">/&gt;</span>
+      </a>
+      <ul class="nav__links">
+        <li><a href="#featured">Home</a></li>
+        <li><a href="#posts">Articles</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+      <div class="nav__search">
+        <input type="text" id="searchInput" placeholder="Search articles..." class="search-input" />
+        <span class="search-icon">&#9906;</span>
+      </div>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- HERO / FEATURED -->
+  <section class="hero" id="featured">
+    <div class="container">
+      <div class="hero__tag">Featured Article</div>
+      <h1 class="hero__title">Building Blazing-Fast APIs<br/>with Rust and Actix-Web</h1>
+      <p class="hero__excerpt">
+        Explore how Rust's ownership model and Actix-Web's actor system combine to
+        deliver sub-millisecond latency without sacrificing safety or developer experience.
+      </p>
+      <div class="hero__meta">
+        <div class="hero__author">
+          <div class="avatar avatar--lg">AK</div>
+          <div>
+            <span class="hero__author-name">Alex Kim</span>
+            <span class="hero__date">April 5, 2026 &middot; 12 min read</span>
+          </div>
+        </div>
+        <div class="hero__tags">
+          <span class="tag">Rust</span>
+          <span class="tag">Performance</span>
+          <span class="tag">Backend</span>
+        </div>
+      </div>
+      <a href="post.html" class="btn btn--primary">Read Article &rarr;</a>
+    </div>
+    <div class="hero__code-panel">
+      <div class="code-window">
+        <div class="code-window__bar">
+          <span class="dot dot--red"></span>
+          <span class="dot dot--yellow"></span>
+          <span class="dot dot--green"></span>
+          <span class="code-window__title">main.rs</span>
+        </div>
+        <pre class="code-window__body"><code><span class="kw">use</span> actix_web::{web, App, HttpServer, Responder};
+
+<span class="attr">#[actix_web::main]</span>
+<span class="kw">async fn</span> <span class="fn">main</span>() -&gt; std::io::Result&lt;()&gt; {
+    HttpServer::new(|| {
+        App::new()
+            .route(<span class="str">"/health"</span>, web::get().<span class="fn">to</span>(health))
+            .route(<span class="str">"/api/v1/data"</span>, web::get().<span class="fn">to</span>(get_data))
+    })
+    .<span class="fn">bind</span>(<span class="str">"0.0.0.0:8080"</span>)?
+    .<span class="fn">run</span>()
+    .<span class="kw">await</span>
+}
+
+<span class="kw">async fn</span> <span class="fn">health</span>() -&gt; <span class="kw">impl</span> Responder {
+    <span class="str">"OK"</span>
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <main class="main container" id="posts">
+
+    <!-- POSTS GRID -->
+    <section class="posts-section">
+      <div class="section-header">
+        <h2 class="section-title">Latest Articles</h2>
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-filter="all">All</button>
+          <button class="filter-tab" data-filter="systems">Systems</button>
+          <button class="filter-tab" data-filter="web">Web</button>
+          <button class="filter-tab" data-filter="ai">AI/ML</button>
+          <button class="filter-tab" data-filter="devops">DevOps</button>
+        </div>
+      </div>
+
+      <div class="posts-grid" id="postsGrid">
+
+        <article class="post-card" data-category="web" data-title="deep dive into typescript generics">
+          <div class="post-card__image">
+            <div class="post-card__image-bg bg--blue"></div>
+            <div class="post-card__lang">TS</div>
+          </div>
+          <div class="post-card__body">
+            <div class="post-card__meta">
+              <span class="tag tag--sm">Web</span>
+              <span class="post-card__read-time">8 min read</span>
+            </div>
+            <h3 class="post-card__title">
+              <a href="post.html">Deep Dive into TypeScript Generics</a>
+            </h3>
+            <p class="post-card__excerpt">
+              Master conditional types, mapped types, and infer to write truly reusable, type-safe code.
+            </p>
+            <div class="post-card__footer">
+              <div class="avatar">JL</div>
+              <div class="post-card__author-info">
+                <span class="post-card__author">Jamie Lee</span>
+                <span class="post-card__date">Mar 28, 2026</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card" data-category="ai" data-title="fine-tuning llms on limited hardware">
+          <div class="post-card__image">
+            <div class="post-card__image-bg bg--purple"></div>
+            <div class="post-card__lang">AI</div>
+          </div>
+          <div class="post-card__body">
+            <div class="post-card__meta">
+              <span class="tag tag--sm">AI/ML</span>
+              <span class="post-card__read-time">15 min read</span>
+            </div>
+            <h3 class="post-card__title">
+              <a href="post.html">Fine-Tuning LLMs on Limited Hardware</a>
+            </h3>
+            <p class="post-card__excerpt">
+              QLoRA and quantization techniques that let you train billion-parameter models on a single consumer GPU.
+            </p>
+            <div class="post-card__footer">
+              <div class="avatar">SR</div>
+              <div class="post-card__author-info">
+                <span class="post-card__author">Sara Reyes</span>
+                <span class="post-card__date">Mar 21, 2026</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card" data-category="devops" data-title="kubernetes resource limits demystified">
+          <div class="post-card__image">
+            <div class="post-card__image-bg bg--teal"></div>
+            <div class="post-card__lang">K8s</div>
+          </div>
+          <div class="post-card__body">
+            <div class="post-card__meta">
+              <span class="tag tag--sm">DevOps</span>
+              <span class="post-card__read-time">10 min read</span>
+            </div>
+            <h3 class="post-card__title">
+              <a href="post.html">Kubernetes Resource Limits Demystified</a>
+            </h3>
+            <p class="post-card__excerpt">
+              Why your pods get OOMKilled, how the CFS scheduler works, and how to set requests and limits correctly.
+            </p>
+            <div class="post-card__footer">
+              <div class="avatar">MN</div>
+              <div class="post-card__author-info">
+                <span class="post-card__author">Mark Novak</span>
+                <span class="post-card__date">Mar 14, 2026</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card" data-category="systems" data-title="writing a linux kernel module in c">
+          <div class="post-card__image">
+            <div class="post-card__image-bg bg--orange"></div>
+            <div class="post-card__lang">C</div>
+          </div>
+          <div class="post-card__body">
+            <div class="post-card__meta">
+              <span class="tag tag--sm">Systems</span>
+              <span class="post-card__read-time">18 min read</span>
+            </div>
+            <h3 class="post-card__title">
+              <a href="post.html">Writing a Linux Kernel Module in C</a>
+            </h3>
+            <p class="post-card__excerpt">
+              From zero to a working character device driver &mdash; with debugging tips that actually work.
+            </p>
+            <div class="post-card__footer">
+              <div class="avatar">AK</div>
+              <div class="post-card__author-info">
+                <span class="post-card__author">Alex Kim</span>
+                <span class="post-card__date">Mar 7, 2026</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card" data-category="web" data-title="react server components a practical guide">
+          <div class="post-card__image">
+            <div class="post-card__image-bg bg--cyan"></div>
+            <div class="post-card__lang">JSX</div>
+          </div>
+          <div class="post-card__body">
+            <div class="post-card__meta">
+              <span class="tag tag--sm">Web</span>
+              <span class="post-card__read-time">11 min read</span>
+            </div>
+            <h3 class="post-card__title">
+              <a href="post.html">React Server Components: A Practical Guide</a>
+            </h3>
+            <p class="post-card__excerpt">
+              Understanding the RSC boundary, data fetching patterns, and common gotchas you'll hit in production.
+            </p>
+            <div class="post-card__footer">
+              <div class="avatar">JL</div>
+              <div class="post-card__author-info">
+                <span class="post-card__author">Jamie Lee</span>
+                <span class="post-card__date">Feb 28, 2026</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card" data-category="ai" data-title="vector databases explained">
+          <div class="post-card__image">
+            <div class="post-card__image-bg bg--pink"></div>
+            <div class="post-card__lang">DB</div>
+          </div>
+          <div class="post-card__body">
+            <div class="post-card__meta">
+              <span class="tag tag--sm">AI/ML</span>
+              <span class="post-card__read-time">9 min read</span>
+            </div>
+            <h3 class="post-card__title">
+              <a href="post.html">Vector Databases Explained: HNSW vs IVF</a>
+            </h3>
+            <p class="post-card__excerpt">
+              A visual breakdown of approximate nearest-neighbour algorithms powering modern semantic search.
+            </p>
+            <div class="post-card__footer">
+              <div class="avatar">SR</div>
+              <div class="post-card__author-info">
+                <span class="post-card__author">Sara Reyes</span>
+                <span class="post-card__date">Feb 20, 2026</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div><!-- /posts-grid -->
+
+      <div class="load-more-wrapper">
+        <button class="btn btn--outline" id="loadMoreBtn">Load More Articles</button>
+      </div>
+    </section>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="sidebar__widget">
+        <h4 class="sidebar__widget-title">About ByteDepth</h4>
+        <p class="sidebar__text">
+          In-depth technical articles on systems programming, web development,
+          AI/ML, and DevOps &mdash; written by engineers, for engineers.
+        </p>
+      </div>
+
+      <div class="sidebar__widget">
+        <h4 class="sidebar__widget-title">Top Tags</h4>
+        <div class="tag-cloud">
+          <span class="tag">Rust</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">Python</span>
+          <span class="tag">Kubernetes</span>
+          <span class="tag">LLMs</span>
+          <span class="tag">Go</span>
+          <span class="tag">Linux</span>
+          <span class="tag">React</span>
+          <span class="tag">WASM</span>
+          <span class="tag">Postgres</span>
+          <span class="tag">Redis</span>
+          <span class="tag">CI/CD</span>
+        </div>
+      </div>
+
+      <div class="sidebar__widget">
+        <h4 class="sidebar__widget-title">Newsletter</h4>
+        <p class="sidebar__text">Get the best articles delivered weekly.</p>
+        <form class="newsletter-form" id="newsletterForm">
+          <input type="email" placeholder="you@example.com" class="newsletter-form__input" required />
+          <button type="submit" class="btn btn--primary btn--sm">Subscribe</button>
+        </form>
+        <p class="newsletter-form__success" id="newsletterSuccess">You're in! Check your inbox.</p>
+      </div>
+
+      <div class="sidebar__widget">
+        <h4 class="sidebar__widget-title">Trending</h4>
+        <ol class="trending-list">
+          <li class="trending-list__item">
+            <span class="trending-list__num">01</span>
+            <a href="post.html" class="trending-list__link">Building Blazing-Fast APIs with Rust</a>
+          </li>
+          <li class="trending-list__item">
+            <span class="trending-list__num">02</span>
+            <a href="post.html" class="trending-list__link">Fine-Tuning LLMs on Limited Hardware</a>
+          </li>
+          <li class="trending-list__item">
+            <span class="trending-list__num">03</span>
+            <a href="post.html" class="trending-list__link">Kubernetes Resource Limits Demystified</a>
+          </li>
+          <li class="trending-list__item">
+            <span class="trending-list__num">04</span>
+            <a href="post.html" class="trending-list__link">Writing a Linux Kernel Module in C</a>
+          </li>
+        </ol>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- ABOUT STRIP -->
+  <section class="about-strip" id="about">
+    <div class="container">
+      <div class="about-strip__inner">
+        <div class="about-strip__text">
+          <h2>Written by engineers who ship.</h2>
+          <p>
+            Every article at ByteDepth goes deep &mdash; with benchmarks,
+            code you can actually run, and honest trade-off analysis.
+            No fluff, no filler.
+          </p>
+        </div>
+        <div class="about-strip__stats">
+          <div class="stat"><span class="stat__num">120+</span><span class="stat__label">Articles</span></div>
+          <div class="stat"><span class="stat__num">40k</span><span class="stat__label">Readers</span></div>
+          <div class="stat"><span class="stat__num">8</span><span class="stat__label">Authors</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <span class="nav__logo-bracket">&lt;</span>ByteDepth<span class="nav__logo-bracket">/&gt;</span>
+          <p>A deep-dive tech blog.</p>
+        </div>
+        <div class="footer__links">
+          <h5>Content</h5>
+          <ul>
+            <li><a href="#">Systems</a></li>
+            <li><a href="#">Web Dev</a></li>
+            <li><a href="#">AI/ML</a></li>
+            <li><a href="#">DevOps</a></li>
+          </ul>
+        </div>
+        <div class="footer__links">
+          <h5>Meta</h5>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Write for Us</a></li>
+            <li><a href="#">RSS Feed</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer__links">
+          <h5>Social</h5>
+          <ul>
+            <li><a href="#">GitHub</a></li>
+            <li><a href="#">Twitter / X</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Mastodon</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 ByteDepth. All rights reserved.</p>
+        <p>Built with HTML, CSS &amp; vanilla JS.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

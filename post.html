@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building Blazing-Fast APIs with Rust &mdash; ByteDepth</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="nav__logo">
+        <span class="nav__logo-bracket">&lt;</span>ByteDepth<span class="nav__logo-bracket">/&gt;</span>
+      </a>
+      <ul class="nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#posts">Articles</a></li>
+        <li><a href="index.html#about">About</a></li>
+      </ul>
+      <div class="nav__search">
+        <input type="text" id="searchInput" placeholder="Search articles..." class="search-input" />
+        <span class="search-icon">&#9906;</span>
+      </div>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- POST HEADER -->
+  <div class="post-header container">
+    <div class="post-header__breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb-sep">/</span>
+      <a href="index.html#posts">Articles</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>Rust &amp; Actix-Web</span>
+    </div>
+    <div class="post-header__tags">
+      <span class="tag">Rust</span>
+      <span class="tag">Performance</span>
+      <span class="tag">Backend</span>
+    </div>
+    <h1 class="post-header__title">Building Blazing-Fast APIs<br/>with Rust and Actix-Web</h1>
+    <p class="post-header__subtitle">
+      Explore how Rust's ownership model and Actix-Web's actor system combine to deliver
+      sub-millisecond latency without sacrificing safety or developer experience.
+    </p>
+    <div class="post-header__meta">
+      <div class="avatar avatar--lg">AK</div>
+      <div>
+        <span class="post-header__author">Alex Kim</span>
+        <span class="post-header__date">April 5, 2026 &middot; 12 min read &middot; 2,400 words</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="reading-progress" id="readingProgress"></div>
+
+  <!-- ARTICLE LAYOUT -->
+  <div class="article-layout container">
+
+    <!-- TABLE OF CONTENTS -->
+    <nav class="toc" id="toc">
+      <h4 class="toc__title">Contents</h4>
+      <ol class="toc__list">
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#why-rust">Why Rust for APIs?</a></li>
+        <li><a href="#setup">Project Setup</a></li>
+        <li><a href="#routing">Routing &amp; Handlers</a></li>
+        <li><a href="#state">Shared State</a></li>
+        <li><a href="#middleware">Middleware</a></li>
+        <li><a href="#benchmarks">Benchmarks</a></li>
+        <li><a href="#conclusion">Conclusion</a></li>
+      </ol>
+    </nav>
+
+    <!-- ARTICLE BODY -->
+    <article class="article-body">
+
+      <section id="intro">
+        <p class="article-lead">
+          When performance is non-negotiable, Rust is hard to beat. Paired with Actix-Web &mdash;
+          one of the fastest web frameworks on TechEmpower's benchmarks &mdash; you get a stack
+          that saturates network cards before the CPU breaks a sweat.
+        </p>
+        <p>
+          In this article we'll build a production-ready JSON API from scratch. We'll cover
+          project structure, async handlers, shared application state, middleware, and we'll
+          close with real benchmark numbers against Node.js and Go equivalents.
+        </p>
+      </section>
+
+      <section id="why-rust">
+        <h2>Why Rust for APIs?</h2>
+        <p>
+          The typical argument for Rust starts with safety &mdash; no null pointers, no data races,
+          no use-after-free. That's true, and it matters. But for API servers the killer feature is
+          <strong>predictable latency</strong>.
+        </p>
+        <p>
+          Garbage-collected runtimes (Go, JVM, Node) introduce stop-the-world pauses that show up as
+          tail-latency spikes. Rust has no GC. Memory is freed deterministically when values go out of
+          scope. Your p99 and p999 latency numbers look almost identical to your p50.
+        </p>
+        <blockquote class="article-blockquote">
+          "We migrated our payment processing service from Go to Rust and saw p99 latency drop from
+          18 ms to 2 ms &mdash; without changing our database queries."
+          <cite>&mdash; Engineering Blog, FinTech Co.</cite>
+        </blockquote>
+      </section>
+
+      <section id="setup">
+        <h2>Project Setup</h2>
+        <p>Start with a fresh Cargo project and add the required dependencies:</p>
+
+        <div class="code-block">
+          <div class="code-block__header">
+            <span class="code-block__label">terminal</span>
+            <button class="code-block__copy" data-code="cargo-new">Copy</button>
+          </div>
+          <pre><code><span class="cmt">$ cargo new rust-api && cd rust-api</span></code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block__header">
+            <span class="code-block__label">Cargo.toml</span>
+            <button class="code-block__copy" data-code="toml">Copy</button>
+          </div>
+          <pre><code>[dependencies]
+actix-web = <span class="str">"4"</span>
+tokio    = { version = <span class="str">"1"</span>, features = [<span class="str">"full"</span>] }
+serde    = { version = <span class="str">"1"</span>, features = [<span class="str">"derive"</span>] }
+serde_json = <span class="str">"1"</span>
+sqlx     = { version = <span class="str">"0.7"</span>, features = [<span class="str">"postgres"</span>, <span class="str">"runtime-tokio"</span>] }
+uuid     = { version = <span class="str">"1"</span>, features = [<span class="str">"v4"</span>] }
+tracing  = <span class="str">"0.1"</span>
+tracing-actix-web = <span class="str">"0.7"</span></code></pre>
+        </div>
+      </section>
+
+      <section id="routing">
+        <h2>Routing &amp; Handlers</h2>
+        <p>
+          Actix-Web uses a macro-based routing DSL that keeps handler functions clean and composable.
+          Each handler is an async function that returns any type implementing <code>Responder</code>.
+        </p>
+
+        <div class="code-block">
+          <div class="code-block__header">
+            <span class="code-block__label">src/handlers/users.rs</span>
+            <button class="code-block__copy" data-code="handlers">Copy</button>
+          </div>
+          <pre><code><span class="kw">use</span> actix_web::{get, post, web, HttpResponse};
+<span class="kw">use</span> serde::{Deserialize, Serialize};
+<span class="kw">use</span> crate::AppState;
+
+<span class="attr">#[derive(Serialize, Deserialize)]</span>
+<span class="kw">pub struct</span> <span class="type">CreateUserDto</span> {
+    <span class="kw">pub</span> username: String,
+    <span class="kw">pub</span> email: String,
+}
+
+<span class="attr">#[get("/users/{id}")]</span>
+<span class="kw">pub async fn</span> <span class="fn">get_user</span>(
+    path: web::Path&lt;uuid::Uuid&gt;,
+    data: web::Data&lt;AppState&gt;,
+) -&gt; HttpResponse {
+    <span class="kw">let</span> user_id = path.<span class="fn">into_inner</span>();
+
+    <span class="kw">match</span> data.db.<span class="fn">fetch_user</span>(user_id).<span class="kw">await</span> {
+        Ok(user)  =&gt; HttpResponse::Ok().<span class="fn">json</span>(user),
+        Err(_)    =&gt; HttpResponse::NotFound().<span class="fn">finish</span>(),
+    }
+}
+
+<span class="attr">#[post("/users")]</span>
+<span class="kw">pub async fn</span> <span class="fn">create_user</span>(
+    body: web::Json&lt;CreateUserDto&gt;,
+    data: web::Data&lt;AppState&gt;,
+) -&gt; HttpResponse {
+    <span class="kw">match</span> data.db.<span class="fn">create_user</span>(&amp;body).<span class="kw">await</span> {
+        Ok(user)  =&gt; HttpResponse::Created().<span class="fn">json</span>(user),
+        Err(e)    =&gt; HttpResponse::InternalServerError()
+                        .<span class="fn">json</span>(serde_json::json!({ <span class="str">"error"</span>: e.<span class="fn">to_string</span>() })),
+    }
+}</code></pre>
+        </div>
+      </section>
+
+      <section id="state">
+        <h2>Shared State</h2>
+        <p>
+          Application state (database pools, config, caches) is shared across workers via
+          <code>web::Data&lt;T&gt;</code>, which wraps your struct in an <code>Arc</code>.
+          No manual locking required for read-heavy data.
+        </p>
+
+        <div class="code-block">
+          <div class="code-block__header">
+            <span class="code-block__label">src/main.rs</span>
+            <button class="code-block__copy" data-code="state">Copy</button>
+          </div>
+          <pre><code><span class="kw">pub struct</span> <span class="type">AppState</span> {
+    <span class="kw">pub</span> db: DbPool,
+    <span class="kw">pub</span> config: Config,
+}
+
+<span class="attr">#[actix_web::main]</span>
+<span class="kw">async fn</span> <span class="fn">main</span>() -&gt; std::io::Result&lt;()&gt; {
+    <span class="kw">let</span> state = web::Data::new(AppState {
+        db: <span class="fn">connect_db</span>().<span class="kw">await</span>,
+        config: Config::<span class="fn">from_env</span>(),
+    });
+
+    HttpServer::new(<span class="kw">move</span> || {
+        App::new()
+            .<span class="fn">app_data</span>(state.<span class="fn">clone</span>())
+            .<span class="fn">service</span>(handlers::users::<span class="fn">get_user</span>)
+            .<span class="fn">service</span>(handlers::users::<span class="fn">create_user</span>)
+    })
+    .<span class="fn">workers</span>(num_cpus::get())
+    .<span class="fn">bind</span>(<span class="str">"0.0.0.0:8080"</span>)?
+    .<span class="fn">run</span>()
+    .<span class="kw">await</span>
+}</code></pre>
+        </div>
+      </section>
+
+      <section id="middleware">
+        <h2>Middleware</h2>
+        <p>
+          Actix-Web middleware wraps the entire request pipeline. The
+          <code>tracing-actix-web</code> crate gives you structured logs and OpenTelemetry
+          spans with a single line:
+        </p>
+
+        <div class="code-block">
+          <div class="code-block__header">
+            <span class="code-block__label">middleware setup</span>
+            <button class="code-block__copy" data-code="middleware">Copy</button>
+          </div>
+          <pre><code>App::new()
+    .<span class="fn">wrap</span>(TracingLogger::default())
+    .<span class="fn">wrap</span>(
+        Cors::default()
+            .<span class="fn">allow_any_origin</span>()
+            .<span class="fn">allowed_methods</span>(vec![<span class="str">"GET"</span>, <span class="str">"POST"</span>, <span class="str">"PUT"</span>, <span class="str">"DELETE"</span>])
+            .<span class="fn">max_age</span>(<span class="num">3600</span>)
+    )
+    .<span class="fn">wrap</span>(
+        DefaultHeaders::new()
+            .<span class="fn">add</span>((<span class="str">"X-Content-Type-Options"</span>, <span class="str">"nosniff"</span>))
+            .<span class="fn">add</span>((<span class="str">"X-Frame-Options"</span>, <span class="str">"DENY"</span>))
+    )</code></pre>
+        </div>
+      </section>
+
+      <section id="benchmarks">
+        <h2>Benchmarks</h2>
+        <p>
+          All tests run on bare metal: AMD EPYC 7763, 64 cores, 256 GB RAM.
+          Wrk with 12 threads, 400 connections, 30-second window. Single
+          <code>GET /users/:id</code> hitting a local Postgres instance.
+        </p>
+
+        <div class="benchmark-table-wrap">
+          <table class="benchmark-table">
+            <thead>
+              <tr>
+                <th>Stack</th>
+                <th>Req/s</th>
+                <th>p50 (ms)</th>
+                <th>p99 (ms)</th>
+                <th>p999 (ms)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="benchmark-table__winner">
+                <td><strong>Rust / Actix-Web</strong></td>
+                <td>248,400</td>
+                <td>0.9</td>
+                <td>1.8</td>
+                <td>2.4</td>
+              </tr>
+              <tr>
+                <td>Go / Fiber</td>
+                <td>201,100</td>
+                <td>1.4</td>
+                <td>4.2</td>
+                <td>11.3</td>
+              </tr>
+              <tr>
+                <td>Go / net/http</td>
+                <td>182,300</td>
+                <td>1.6</td>
+                <td>5.1</td>
+                <td>14.8</td>
+              </tr>
+              <tr>
+                <td>Node.js / Fastify</td>
+                <td>94,700</td>
+                <td>3.1</td>
+                <td>18.4</td>
+                <td>62.7</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          Note the tail latency columns &mdash; Go's GC pauses are visible at p99 and become
+          dramatic at p999. Rust's numbers barely move, which is exactly what you want
+          for a payment or authentication service.
+        </p>
+      </section>
+
+      <section id="conclusion">
+        <h2>Conclusion</h2>
+        <p>
+          Actix-Web makes Rust accessible for API development without hiding its power.
+          You get zero-cost abstractions, fearless concurrency, and benchmark numbers that
+          will make your SRE team very happy.
+        </p>
+        <p>
+          The learning curve is real &mdash; the borrow checker will challenge you. But the
+          payoff is a binary that runs reliably under load for months without a restart.
+        </p>
+        <p>The full source code for this tutorial is available on GitHub (link in the footer).</p>
+      </section>
+
+      <!-- AUTHOR CARD -->
+      <div class="author-card">
+        <div class="avatar avatar--xl">AK</div>
+        <div class="author-card__info">
+          <span class="author-card__name">Alex Kim</span>
+          <span class="author-card__role">Staff Engineer &mdash; Systems &amp; Performance</span>
+          <p class="author-card__bio">
+            Alex writes low-level software for fun and profit. Formerly at Cloudflare and Fastly,
+            now building high-throughput data pipelines and occasionally touching Rust on weekends.
+          </p>
+        </div>
+      </div>
+
+      <!-- SHARE -->
+      <div class="post-share">
+        <span>Share:</span>
+        <a href="#" class="share-btn">Twitter</a>
+        <a href="#" class="share-btn">LinkedIn</a>
+        <a href="#" class="share-btn">HN</a>
+        <a href="#" class="share-btn">Copy link</a>
+      </div>
+
+      <!-- RELATED POSTS -->
+      <div class="related-posts">
+        <h3 class="related-posts__title">Related Articles</h3>
+        <div class="related-posts__grid">
+          <a href="post.html" class="related-post-card">
+            <span class="tag tag--sm">Systems</span>
+            <h4>Writing a Linux Kernel Module in C</h4>
+            <span class="post-card__date">Mar 7, 2026</span>
+          </a>
+          <a href="post.html" class="related-post-card">
+            <span class="tag tag--sm">DevOps</span>
+            <h4>Kubernetes Resource Limits Demystified</h4>
+            <span class="post-card__date">Mar 14, 2026</span>
+          </a>
+          <a href="post.html" class="related-post-card">
+            <span class="tag tag--sm">AI/ML</span>
+            <h4>Fine-Tuning LLMs on Limited Hardware</h4>
+            <span class="post-card__date">Mar 21, 2026</span>
+          </a>
+        </div>
+      </div>
+
+    </article>
+
+  </div><!-- /article-layout -->
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <span class="nav__logo-bracket">&lt;</span>ByteDepth<span class="nav__logo-bracket">/&gt;</span>
+          <p>A deep-dive tech blog.</p>
+        </div>
+        <div class="footer__links">
+          <h5>Content</h5>
+          <ul>
+            <li><a href="#">Systems</a></li>
+            <li><a href="#">Web Dev</a></li>
+            <li><a href="#">AI/ML</a></li>
+            <li><a href="#">DevOps</a></li>
+          </ul>
+        </div>
+        <div class="footer__links">
+          <h5>Meta</h5>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Write for Us</a></li>
+            <li><a href="#">RSS Feed</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer__links">
+          <h5>Social</h5>
+          <ul>
+            <li><a href="#">GitHub</a></li>
+            <li><a href="#">Twitter / X</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Mastodon</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 ByteDepth. All rights reserved.</p>
+        <p>Built with HTML, CSS &amp; vanilla JS.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
