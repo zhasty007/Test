@@ -1,0 +1,34 @@
+---
+layout: layouts/base.njk
+title: Connecticut Accident Reports
+description: Daily summaries of serious car, truck, motorcycle, and pedestrian accidents reported across Connecticut.
+pagination:
+  data: collections.accidents
+  size: 12
+  alias: posts
+  generatePageOnEmptyData: true
+permalink: "/accidents/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
+---
+<section class="section container">
+  <h1>Connecticut Accident Reports</h1>
+  <p class="lead">Summaries of serious accidents reported by Connecticut police and local news, updated daily. We do not publish the names of anyone involved.</p>
+
+  {% if collections.counties.length %}
+  <nav class="county-filter" aria-label="Filter by county">
+    <a href="/accidents/" class="county-filter__item active">All counties</a>
+    {% for c in collections.counties %}
+    <a href="/accidents/{{ c | slug }}/" class="county-filter__item">{{ c }}</a>
+    {% endfor %}
+  </nav>
+  {% endif %}
+
+  {% include "partials/post-grid.njk" %}
+
+  {% if pagination.pages.length > 1 %}
+  <nav class="pager">
+    {% if pagination.href.previous %}<a href="{{ pagination.href.previous }}">&larr; Newer</a>{% endif %}
+    <span>Page {{ pagination.pageNumber + 1 }} of {{ pagination.pages.length }}</span>
+    {% if pagination.href.next %}<a href="{{ pagination.href.next }}">Older &rarr;</a>{% endif %}
+  </nav>
+  {% endif %}
+</section>

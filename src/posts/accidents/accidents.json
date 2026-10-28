@@ -1,0 +1,5 @@
+{
+  "layout": "layouts/post.njk",
+  "tags": ["accident"],
+  "permalink": "/accidents/{{ page.date | ymd }}-{{ page.fileSlug | slug }}/"
+}

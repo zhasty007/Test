@@ -1,0 +1,17 @@
+{% if posts.length %}
+<div class="post-grid">
+  {% for post in posts %}
+  <article class="post-card" data-county="{{ post.data.county | slug }}">
+    <div class="post-card__meta">
+      <span>{{ post.date | readableDate }}</span>
+      <span class="tag tag--severity">{{ post.data.severity }}</span>
+    </div>
+    <h3 class="post-card__title"><a href="{{ post.url }}">{{ post.data.title }}</a></h3>
+    <p class="post-card__excerpt">{{ post.data.description }}</p>
+    <p class="post-card__place">{{ post.data.town }}, {{ post.data.county }}</p>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">No accident reports have been published yet. Check back soon.</p>
+{% endif %}

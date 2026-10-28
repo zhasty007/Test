@@ -1,0 +1,18 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.counties
+  size: 1
+  alias: county
+permalink: "/accidents/{{ county | slug }}/"
+eleventyComputed:
+  title: "{{ county }} Accident Reports"
+  description: "Recent serious accidents reported in {{ county }}, Connecticut."
+---
+<section class="section container">
+  <p class="breadcrumbs"><a href="/accidents/">Accident Reports</a> &rsaquo; {{ county }}</p>
+  <h1>{{ county }} Accident Reports</h1>
+  <p class="lead">Serious accidents reported in {{ county }}, Connecticut.</p>
+  {% set posts = collections.accidents | byCounty(county) %}
+  {% include "partials/post-grid.njk" %}
+</section>

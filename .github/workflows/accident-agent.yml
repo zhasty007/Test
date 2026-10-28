@@ -1,0 +1,51 @@
+name: Daily accident agent
+
+on:
+  schedule:
+    - cron: "17 11 * * *" # about 7:17am Eastern
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: accident-agent
+  cancel-in-progress: false
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Run agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+        run: npm run agent
+      - name: Build site to catch template errors
+        run: npm run build
+      - name: Open review pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$(git status --porcelain src/posts)" ]; then
+            echo "No new posts today."
+            exit 0
+          fi
+          branch="agent/accidents-$(date -u +%Y-%m-%d-%H%M)"
+          git config user.name "accident-agent[bot]"
+          git config user.email "accident-agent@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add src/posts agent/state/seen.json
+          git commit -m "Draft accident reports for $(date -u +%Y-%m-%d)"
+          git push -u origin "$branch"
+          gh pr create --base "${{ github.event.repository.default_branch }}" --head "$branch" \
+            --title "Accident reports for review: $(date -u +%Y-%m-%d)" \
+            --body-file agent/state/last-run.md

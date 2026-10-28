@@ -1,0 +1,31 @@
+---
+layout: layouts/base.njk
+title: Connecticut Accident News and Top-Rated Injury Attorneys
+---
+<section class="hero">
+  <div class="container hero__inner">
+    <div>
+      <p class="hero__eyebrow">Connecticut serious injury referrals</p>
+      <h1 class="hero__title">Hurt in a serious accident? Talk to one of Connecticut's best.</h1>
+      <p class="hero__lead">We only refer to Connecticut attorneys independently rated among the very best, period. No paid placements, no guesswork.</p>
+      <div class="hero__actions">
+        <a href="/contact/" class="btn">Get Matched Free</a>
+        <a href="/accidents/" class="btn btn--ghost">Latest Accident Reports</a>
+      </div>
+    </div>
+    <ul class="hero__points">
+      <li><strong>Independently rated.</strong> Every attorney we refer is recognized by {{ site.ratingSource }}.</li>
+      <li><strong>Serious injuries only.</strong> We focus on catastrophic, life-changing, and fatal accidents.</li>
+      <li><strong>No cost to you.</strong> Referrals are free and confidential.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section__header">
+    <h2>Recent Connecticut accident reports</h2>
+    <a href="/accidents/">View all &rarr;</a>
+  </div>
+  {% set posts = collections.accidents | limit(6) %}
+  {% include "partials/post-grid.njk" %}
+</section>

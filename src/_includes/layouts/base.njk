@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% if title %}{{ title }} | {% endif %}{{ site.name }}</title>
+  <meta name="description" content="{{ description or site.description }}" />
+  <link rel="canonical" href="{{ site.url }}{{ page.url }}" />
+  <meta property="og:site_name" content="{{ site.name }}" />
+  <meta property="og:title" content="{{ title or site.name }}" />
+  <meta property="og:description" content="{{ description or site.description }}" />
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}" />
+  <meta property="og:type" content="{% if layout == 'layouts/post.njk' %}article{% else %}website{% endif %}" />
+  <link rel="alternate" type="application/rss+xml" title="{{ site.name }} accident reports" href="/feed.xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="ad-banner">Attorney Advertising</div>
+
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="/" class="nav__logo">Find a Great <span>CT</span> Attorney</a>
+      <ul class="nav__links" id="navLinks">
+        <li><a href="/">Home</a></li>
+        <li><a href="/accidents/">Accident Reports</a></li>
+        <li><a href="/about/">How We Choose Attorneys</a></li>
+        <li><a href="/contact/" class="btn btn--small">Get Matched</a></li>
+      </ul>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    {{ content | safe }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer__grid">
+      <div>
+        <p class="footer__brand">{{ site.name }}</p>
+        <p>We connect people seriously injured in Connecticut with attorneys rated among the best by {{ site.ratingSource }}.</p>
+      </div>
+      <div>
+        <p class="footer__heading">Explore</p>
+        <ul>
+          <li><a href="/accidents/">Accident Reports</a></li>
+          <li><a href="/about/">How We Choose Attorneys</a></li>
+          <li><a href="/contact/">Get Matched</a></li>
+          <li><a href="/disclaimer/">Disclaimer</a></li>
+          <li><a href="/feed.xml">RSS Feed</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer__legal">
+      <p><strong>Attorney Advertising.</strong> {{ site.name }} is not a law firm and does not provide legal advice. Use of this site does not create an attorney-client relationship. Prior results do not guarantee a similar outcome. See our <a href="/disclaimer/">full disclaimer</a>.</p>
+      <p>&copy; {{ meta.year }} {{ site.name }}</p>
+    </div>
+  </footer>
+
+  <script src="/assets/script.js"></script>
+</body>
+</html>

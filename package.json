@@ -1,0 +1,22 @@
+{
+  "name": "find-a-great-ct-attorney",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Find a Great CT Attorney: referral site plus a daily Connecticut accident news agent.",
+  "scripts": {
+    "build": "eleventy",
+    "start": "eleventy --serve",
+    "agent": "node agent/index.js",
+    "test": "node --test agent/test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "^3.1.7",
+    "@anthropic-ai/sdk": "^1.3.0",
+    "rss-parser": "^3.13.0",
+    "zod": "^4.6.7"
+  }
+}

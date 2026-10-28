@@ -1,0 +1,50 @@
+---
+layout: layouts/base.njk
+---
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "headline": {{ title | json | safe }},
+  "description": {{ description | json | safe }},
+  "datePublished": "{{ page.date | isoDate }}",
+  "contentLocation": { "@type": "Place", "name": {{ (town + ", Connecticut") | json | safe }} },
+  "publisher": { "@type": "Organization", "name": {{ site.name | json | safe }}, "url": "{{ site.url }}" },
+  "mainEntityOfPage": "{{ site.url }}{{ page.url }}"
+}
+</script>
+
+<article class="article container container--narrow">
+  <p class="breadcrumbs"><a href="/accidents/">Accident Reports</a> &rsaquo; <a href="/accidents/{{ county | slug }}/">{{ county }}</a></p>
+  <h1 class="article__title">{{ title }}</h1>
+  <div class="article__meta">
+    <span>{{ page.date | readableDate }}</span>
+    <span class="tag">{{ town }}</span>
+    <span class="tag">{{ accident_type }}</span>
+    <span class="tag tag--severity">{{ severity }}</span>
+  </div>
+
+  <div class="article__body">
+    {{ content | safe }}
+  </div>
+
+  {% if sources and sources.length %}
+  <section class="sources">
+    <h2>Sources</h2>
+    <ul>
+      {% for s in sources %}
+      <li><a href="{{ s.url }}" rel="nofollow noopener" target="_blank">{{ s.name }}</a></li>
+      {% endfor %}
+    </ul>
+    <p class="sources__note">This summary is based on the public reports above. Details may change as police complete their investigation.</p>
+  </section>
+  {% endif %}
+
+  <aside class="cta-box">
+    <h2>Seriously injured in a Connecticut accident?</h2>
+    <p>We refer injured people to Connecticut attorneys independently rated among the very best. A free, confidential conversation can help you understand your options.</p>
+    <a href="/contact/" class="btn">Get Matched with a Top-Rated Attorney</a>
+  </aside>
+
+  <p class="article__disclaimer">This article is general public information about a reported accident. It is not legal advice and is not directed at anyone involved. Attorney Advertising.</p>
+</article>

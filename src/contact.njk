@@ -1,0 +1,18 @@
+---
+layout: layouts/base.njk
+title: Get Matched with a Top-Rated Attorney
+description: Tell us briefly what happened and we will refer you to a top-rated Connecticut personal injury attorney.
+---
+<section class="section container container--narrow">
+  <h1>Get matched with a top-rated attorney</h1>
+  <p class="lead">Share a few details and we will connect you with a Connecticut attorney independently rated among the very best. It's free and confidential.</p>
+  <form class="contact-form" method="POST" action="{{ site.formAction }}" name="intake" data-netlify="true">
+    <label>Your name<input type="text" name="name" required autocomplete="name" /></label>
+    <label>Phone<input type="tel" name="phone" required autocomplete="tel" /></label>
+    <label>Email<input type="email" name="email" autocomplete="email" /></label>
+    <label>Town where the accident happened<input type="text" name="town" /></label>
+    <label>Briefly, what happened?<textarea name="details" rows="5"></textarea></label>
+    <p class="form-note">Please don't include medical records or sensitive details here. Submitting this form does not create an attorney-client relationship.</p>
+    <button type="submit" class="btn">Request a Referral</button>
+  </form>
+</section>
